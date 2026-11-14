@@ -156,7 +156,7 @@ def show_exam_result(request, course_id, submission_id):
         'selected_ids': selected_choice_ids,
         'detailed_results': detailed_results,
     }
-    return render(request, 'onlinecourse/exam_result.html', context)
+    return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
 
 
 # User Authentication Views
