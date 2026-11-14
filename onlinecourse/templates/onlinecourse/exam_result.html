@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Results - {{ course.name }}</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --brand-primary: #4f46e5;
+            --brand-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --success-gradient: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+            --danger-gradient: linear-gradient(135deg, #991b1b 0%, #dc2626 50%, #f87171 100%);
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.92) !important;
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Banner Cards */
+        .result-hero-card {
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .result-hero-card.passed-banner {
+            background: var(--success-gradient);
+        }
+
+        .result-hero-card.failed-banner {
+            background: var(--danger-gradient);
+        }
+
+        /* Confetti Elements */
+        .confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 16px;
+            opacity: 0.8;
+            border-radius: 2px;
+            animation: fall 3s infinite linear;
+        }
+
+        .confetti-piece:nth-child(1) { left: 10%; background: #ffd700; animation-duration: 2.5s; animation-delay: 0.2s; }
+        .confetti-piece:nth-child(2) { left: 25%; background: #ffffff; animation-duration: 3.2s; animation-delay: 0.8s; }
+        .confetti-piece:nth-child(3) { left: 40%; background: #6ee7b7; animation-duration: 2.8s; animation-delay: 0.4s; }
+        .confetti-piece:nth-child(4) { left: 60%; background: #fbcfe8; animation-duration: 3.5s; animation-delay: 1.1s; }
+        .confetti-piece:nth-child(5) { left: 75%; background: #fef08a; animation-duration: 2.9s; animation-delay: 0.6s; }
+        .confetti-piece:nth-child(6) { left: 90%; background: #93c5fd; animation-duration: 3.1s; animation-delay: 1.4s; }
+
+        @keyframes fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(350px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Metric KPI Cards */
+        .metric-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid #e2e8f0;
+            padding: 1.75rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Circular Score Gauge */
+        .score-gauge-ring {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+            position: relative;
+        }
+
+        .score-gauge-inner {
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Question Breakdown Styles */
+        .breakdown-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.25rem;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.2s ease;
+        }
+
+        .breakdown-card:hover {
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .breakdown-header-success {
+            background: #ecfdf5;
+            border-bottom: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+
+        .breakdown-header-danger {
+            background: #fef2f2;
+            border-bottom: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .breakdown-choice-item {
+            padding: 1.15rem 1.35rem;
+            border-radius: 0.85rem;
+            margin-bottom: 0.65rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+            font-weight: 500;
+        }
+
+        .choice-correct-selected {
+            background: #ecfdf5;
+            border-color: #10b981;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .choice-missed-correct {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        .choice-wrong-selected {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #991b1b;
+            font-weight: 600;
+        }
+
+        .choice-neutral {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            color: #64748b;
+        }
+
+        .btn-retake {
+            background: var(--brand-gradient);
+            color: white;
+            font-weight: 700;
+            border-radius: 9999px;
+            padding: 0.9rem 2.25rem;
+            border: none;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.25s ease;
+        }
+
+        .btn-retake:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Glass Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark glass-nav sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'onlinecourse:index' %}">
+                <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle p-2 shadow-sm" style="width: 36px; height: 36px;">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </span>
+                <span class="text-white fs-5 tracking-tight">Online<span class="text-primary-subtle fw-light">Course</span></span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'onlinecourse:course_details' course.id %}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Course
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+
+        <!-- Result Outcome Hero Banner -->
+        {% if passed %}
+            <div class="result-hero-card passed-banner p-4 p-md-5 mb-5">
+                <div class="confetti-container">
+                    <div class="confetti-piece"></div>
+                    <div class="confetti-piece"></div>
+                    <div class="confetti-piece"></div>
+                    <div class="confetti-piece"></div>
+                    <div class="confetti-piece"></div>
+                    <div class="confetti-piece"></div>
+                </div>
+                <div class="position-relative z-1 d-flex flex-column flex-md-row align-items-center gap-4">
+                    <div class="display-3 text-warning">
+                        <i class="bi bi-trophy-fill"></i>
+                    </div>
+                    <div>
+                        <div class="d-inline-flex align-items-center gap-2 badge bg-white bg-opacity-25 rounded-pill px-3 py-1 text-uppercase fw-bold mb-2">
+                            <i class="bi bi-stars text-warning"></i> Assessment Passed
+                        </div>
+                        <h1 class="display-5 fw-extrabold mb-2">Congratulations! You Passed the Exam!</h1>
+                        <p class="fs-5 mb-0 opacity-90 col-lg-10">
+                            Excellent performance! You scored <strong>{{ grade }}%</strong>, successfully satisfying the 70% proficiency criteria for <strong>{{ course.name }}</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="result-hero-card failed-banner p-4 p-md-5 mb-5">
+                <div class="position-relative z-1 d-flex flex-column flex-md-row align-items-center gap-4">
+                    <div class="display-3 text-white">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div>
+                        <div class="d-inline-flex align-items-center gap-2 badge bg-white bg-opacity-25 rounded-pill px-3 py-1 text-uppercase fw-bold mb-2">
+                            <i class="bi bi-arrow-clockwise"></i> Passing Threshold: 70%
+                        </div>
+                        <h1 class="display-5 fw-extrabold mb-2">Please Review and Try Again</h1>
+                        <p class="fs-5 mb-0 opacity-90 col-lg-10">
+                            You achieved a score of <strong>{{ grade }}%</strong>. A minimum score of 70% is required to earn credit. Please review the course lessons and retake the assessment.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Interactive Score Overview Metrics -->
+        <div class="row g-4 mb-5">
+            <!-- Gauge / Final Score Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="metric-card">
+                    <span class="text-muted small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Final Evaluation</span>
+                    <div class="score-gauge-ring" style="background: conic-gradient({% if passed %}#10b981{% else %}#ef4444{% endif %} 0% {{ grade }}%, #e2e8f0 {{ grade }}% 100%);">
+                        <div class="score-gauge-inner">
+                            <span class="fs-2 fw-extrabold {% if passed %}text-success{% else %}text-danger{% endif %}">{{ grade }}%</span>
+                            <small class="text-muted fw-semibold">Score</small>
+                        </div>
+                    </div>
+                    <span class="badge {% if passed %}bg-success-subtle text-success border border-success-subtle{% else %}bg-danger-subtle text-danger border border-danger-subtle{% endif %} rounded-pill px-3 py-1 fw-bold">
+                        {% if passed %}PASSED (>= 70%){% else %}BELOW PASS MARK{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Points Earned Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="metric-card">
+                    <span class="text-muted small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Points Calculation</span>
+                    <div class="my-auto py-2">
+                        <div class="display-4 fw-extrabold text-dark mb-1">
+                            {{ earned_score }} <span class="fs-4 text-muted fw-normal">/ {{ total_score }}</span>
+                        </div>
+                        <p class="text-muted small mb-0">Total weighted points awarded across all questions</p>
+                    </div>
+                    <div class="progress w-100 mt-3" style="height: 8px;">
+                        <div class="progress-bar {% if passed %}bg-success{% else %}bg-danger{% endif %}" role="progressbar" style="width: {{ grade }}%;" aria-valuenow="{{ grade }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attempt Details Card -->
+            <div class="col-lg-4 col-md-12">
+                <div class="metric-card">
+                    <span class="text-muted small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Attempt Summary</span>
+                    <div class="my-auto py-2">
+                        <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                            {% if passed %}
+                                <i class="bi bi-patch-check-fill text-success fs-2"></i>
+                                <span class="fs-4 fw-bold text-success">Accredited</span>
+                            {% else %}
+                                <i class="bi bi-arrow-repeat text-danger fs-2"></i>
+                                <span class="fs-4 fw-bold text-danger">Retake Eligible</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Recorded on {{ submission.time_submitted|date:"F d, Y \a\\t H:i" }}
+                        </p>
+                    </div>
+                    <a href="{% url 'onlinecourse:course_details' course.id %}#exam-section" class="btn btn-outline-primary rounded-pill btn-sm px-4 fw-semibold w-100">
+                        <i class="bi bi-arrow-repeat me-1"></i>New Attempt
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question-by-Question Breakdown -->
+        <section class="mb-5">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h2 class="h4 fw-bold text-dark mb-1">
+                        <i class="bi bi-clipboard2-check-fill text-primary me-2"></i>Detailed Question Breakdown
+                    </h2>
+                    <p class="text-muted small mb-0">Review correct answers and examine your individual question submissions.</p>
+                </div>
+                <span class="badge bg-light text-secondary border rounded-pill px-3 py-2 fw-semibold">
+                    {{ detailed_results|length }} Questions Evaluated
+                </span>
+            </div>
+
+            {% for item in detailed_results %}
+                <div class="breakdown-card">
+                    <!-- Breakdown Header -->
+                    <div class="p-3 px-4 d-flex flex-wrap justify-content-between align-items-center gap-2 {% if item.is_correct %}breakdown-header-success{% else %}breakdown-header-danger{% endif %}">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge {% if item.is_correct %}bg-success{% else %}bg-danger{% endif %} rounded-pill px-3 py-1 fw-bold">
+                                Question {{ forloop.counter }}
+                            </span>
+                            <span class="fw-bold fs-6">{{ item.question.question_text }}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-white text-dark border rounded-pill px-3 py-1 fw-semibold">
+                                +{{ item.points_earned }} / {{ item.grade }} Points
+                            </span>
+                            {% if item.is_correct %}
+                                <span class="badge bg-success rounded-pill px-3 py-1"><i class="bi bi-check-lg me-1"></i>Correct</span>
+                            {% else %}
+                                <span class="badge bg-danger rounded-pill px-3 py-1"><i class="bi bi-x-lg me-1"></i>Incorrect</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Choices List -->
+                    <div class="p-4 bg-white">
+                        <div class="choices-container">
+                            {% for choice in item.choices %}
+                                {% if choice.is_correct and choice == item.selected_choice %}
+                                    <!-- User selected the correct answer -->
+                                    <div class="breakdown-choice-item choice-correct-selected">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                            <span>{{ choice.choice_text }}</span>
+                                        </div>
+                                        <span class="badge bg-success rounded-pill px-3 py-2 fw-semibold">
+                                            <i class="bi bi-check2-all me-1"></i>Your Choice (Correct)
+                                        </span>
+                                    </div>
+                                {% elif choice.is_correct %}
+                                    <!-- Correct answer that user missed -->
+                                    <div class="breakdown-choice-item choice-missed-correct">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <i class="bi bi-check-circle text-success fs-5"></i>
+                                            <span>{{ choice.choice_text }}</span>
+                                        </div>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-semibold">
+                                            <i class="bi bi-lightbulb-fill me-1"></i>Correct Answer
+                                        </span>
+                                    </div>
+                                {% elif choice == item.selected_choice and not choice.is_correct %}
+                                    <!-- User selected wrong answer -->
+                                    <div class="breakdown-choice-item choice-wrong-selected">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                                            <span>{{ choice.choice_text }}</span>
+                                        </div>
+                                        <span class="badge bg-danger rounded-pill px-3 py-2 fw-semibold">
+                                            <i class="bi bi-x me-1"></i>Your Choice (Incorrect)
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <!-- Neutral option -->
+                                    <div class="breakdown-choice-item choice-neutral">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <i class="bi bi-circle text-muted fs-6"></i>
+                                            <span>{{ choice.choice_text }}</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- Bottom Action Navigation -->
+            <div class="d-flex flex-wrap gap-3 pt-4 border-top">
+                <a href="{% url 'onlinecourse:course_details' course.id %}#exam-section" class="btn-retake">
+                    <i class="bi bi-arrow-repeat"></i>Retake Assessment
+                </a>
+                <a href="{% url 'onlinecourse:course_details' course.id %}" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold d-inline-flex align-items-center">
+                    <i class="bi bi-book me-2"></i>Review Lessons
+                </a>
+                <a href="{% url 'onlinecourse:index' %}" class="btn btn-light border rounded-pill px-4 fw-semibold d-inline-flex align-items-center ms-auto">
+                    <i class="bi bi-grid-fill me-2"></i>All Courses
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Clean Footer -->
+    <footer class="bg-white border-top py-4 mt-auto">
+        <div class="container text-center text-muted small">
+            <p class="mb-0">&copy; {% now "Y" %} Online Course Application. Powered by Django &amp; Bootstrap 5.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

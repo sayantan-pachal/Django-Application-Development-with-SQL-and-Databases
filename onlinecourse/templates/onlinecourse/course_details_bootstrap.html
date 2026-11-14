@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.name }} - Course &amp; Assessment</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --brand-primary: #4f46e5;
+            --brand-primary-hover: #4338ca;
+            --brand-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --hero-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            --glass-bg: rgba(255, 255, 255, 0.88);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+            --card-shadow-hover: 0 20px 35px -5px rgba(79, 70, 229, 0.15), 0 8px 10px -4px rgba(79, 70, 229, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Glassmorphism Navbar */
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.92) !important;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hero Header */
+        .hero-card {
+            background: var(--hero-gradient);
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0) 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #c7d2fe;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        /* Lesson Accordion */
+        .custom-accordion .accordion-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem !important;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: var(--card-shadow);
+            transition: all 0.25s ease;
+        }
+
+        .custom-accordion .accordion-item:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+            border-color: #cbd5e1;
+        }
+
+        .custom-accordion .accordion-button {
+            padding: 1.25rem 1.5rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #0f172a;
+            background: #ffffff;
+            border-radius: 1rem !important;
+        }
+
+        .custom-accordion .accordion-button:not(.collapsed) {
+            color: var(--brand-primary);
+            background: #f5f3ff;
+            box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-accordion .accordion-button:focus {
+            box-shadow: none;
+            border-color: rgba(79, 70, 229, 0.3);
+        }
+
+        .lesson-number-pill {
+            background: var(--brand-gradient);
+            color: white;
+            font-size: 0.8rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 700;
+        }
+
+        /* Assessment Card */
+        .exam-section-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .exam-header {
+            background: var(--hero-gradient);
+            padding: 2rem 2.5rem;
+            color: #ffffff;
+            position: relative;
+        }
+
+        .question-container {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            margin-bottom: 1.75rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.25s ease;
+        }
+
+        .question-container:hover {
+            border-color: #c7d2fe;
+            box-shadow: 0 12px 25px -5px rgba(79, 70, 229, 0.08);
+        }
+
+        /* Interactive Radio Choice Cards */
+        .choice-option-wrapper {
+            position: relative;
+            margin-bottom: 0.75rem;
+        }
+
+        .choice-option-wrapper input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .choice-card-label {
+            display: flex;
+            align-items: center;
+            padding: 1.15rem 1.35rem;
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            color: #334155;
+            user-select: none;
+        }
+
+        .choice-card-label:hover {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+        }
+
+        .choice-radio-indicator {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #94a3b8;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .choice-radio-indicator::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+
+        /* Active / Checked State */
+        .choice-option-wrapper input[type="radio"]:checked + .choice-card-label {
+            background: #eef2ff;
+            border-color: var(--brand-primary);
+            color: #1e1b4b;
+            font-weight: 600;
+            box-shadow: 0 6px 16px -2px rgba(79, 70, 229, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .choice-option-wrapper input[type="radio"]:checked + .choice-card-label .choice-radio-indicator {
+            border-color: var(--brand-primary);
+            background: var(--brand-primary);
+        }
+
+        .choice-option-wrapper input[type="radio"]:checked + .choice-card-label .choice-radio-indicator::after {
+            background: #ffffff;
+        }
+
+        /* Submit Button */
+        .btn-submit-exam {
+            background: var(--brand-gradient);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.15rem;
+            padding: 1rem 2.75rem;
+            border-radius: 9999px;
+            border: none;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .btn-submit-exam:hover {
+            color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.55);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Modern Glass Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark glass-nav sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'onlinecourse:index' %}">
+                <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle p-2 shadow-sm" style="width: 36px; height: 36px;">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </span>
+                <span class="text-white fs-5 tracking-tight">Online<span class="text-primary-subtle fw-light">Course</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link text-light opacity-75 active fw-medium" href="{% url 'onlinecourse:index' %}">
+                            <i class="bi bi-compass me-1"></i>Explore Courses
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    {% if user.is_authenticated %}
+                        <div class="text-light me-2 d-flex align-items-center gap-2 small">
+                            <i class="bi bi-person-circle fs-5 text-indigo-300"></i>
+                            <span class="fw-semibold">{{ user.username }}</span>
+                        </div>
+                        <a href="{% url 'onlinecourse:logout' %}" class="btn btn-outline-light btn-sm rounded-pill px-3">Logout</a>
+                    {% else %}
+                        <a href="{% url 'onlinecourse:login' %}" class="btn btn-outline-light btn-sm rounded-pill px-3">Log In</a>
+                        <a href="{% url 'onlinecourse:registration' %}" class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold shadow-sm">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="container my-5">
+        <!-- Messages Alert -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Stunning Course Hero Header -->
+        <div class="hero-card p-4 p-md-5 mb-5 text-white">
+            <div class="position-relative z-1">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <span class="badge hero-badge px-3 py-2 rounded-pill text-uppercase">
+                        <i class="bi bi-award-fill me-1 text-warning"></i>Certified Course
+                    </span>
+                    {% if course.pub_date %}
+                        <span class="text-light opacity-75 small">
+                            <i class="bi bi-clock me-1"></i>Updated: {{ course.pub_date|date:"F Y" }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <h1 class="display-4 fw-extrabold mb-3 tracking-tight">{{ course.name }}</h1>
+                <p class="lead opacity-90 col-lg-10 fs-5 mb-4 fw-normal">
+                    {{ course.description }}
+                </p>
+
+                <!-- Course Metadata Highlights -->
+                <div class="d-flex flex-wrap gap-4 pt-4 border-top border-white border-opacity-10 small fw-medium">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-people-fill fs-5 text-indigo-300"></i>
+                        <span><strong>{{ course.total_enrollment }}</strong> Students Enrolled</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-journal-check fs-5 text-indigo-300"></i>
+                        <span><strong>{{ course.lesson_set.count }}</strong> Interactive Lessons</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-patch-question-fill fs-5 text-indigo-300"></i>
+                        <span><strong>{{ course.question_set.count }}</strong> Assessment Questions</span>
+                    </div>
+                    {% if course.instructors.all %}
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-person-badge fs-5 text-indigo-300"></i>
+                            <span>Instructors: 
+                                {% for instructor in course.instructors.all %}
+                                    <span class="badge bg-white bg-opacity-20 rounded-pill px-2 py-1 ms-1">{{ instructor.user.username }}</span>
+                                {% endfor %}
+                            </span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Lessons Syllabus Section -->
+        <section class="mb-5">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h2 class="h3 fw-bold text-dark mb-1">
+                        <i class="bi bi-collection-play-fill text-primary me-2"></i>Course Curriculum
+                    </h2>
+                    <p class="text-muted small mb-0">Step-by-step curriculum designed to guide you through the course material.</p>
+                </div>
+                <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill fw-semibold">
+                    {{ course.lesson_set.count }} Modules
+                </span>
+            </div>
+
+            {% if course.lesson_set.all %}
+                <div class="accordion custom-accordion" id="lessonsAccordion">
+                    {% for lesson in course.lesson_set.all %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ lesson.id }}">
+                                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ lesson.id }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ lesson.id }}">
+                                    <span class="lesson-number-pill me-3">Lesson {{ forloop.counter }}</span>
+                                    <span>{{ lesson.title }}</span>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ lesson.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ lesson.id }}" data-bs-parent="#lessonsAccordion">
+                                <div class="accordion-body text-secondary lh-lg p-4 bg-white border-top">
+                                    {{ lesson.content|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card border-0 shadow-sm p-4 text-center rounded-4">
+                    <p class="text-muted mb-0">No lessons currently uploaded for this course.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Final Assessment & Exam Section -->
+        <section id="exam-section" class="mb-5">
+            <div class="exam-section-card">
+                <!-- Exam Header -->
+                <div class="exam-header">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div>
+                            <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-3 py-1 mb-2 text-uppercase fw-semibold" style="letter-spacing: 0.05em;">Final Evaluation</span>
+                            <h2 class="h3 fw-bold mb-1 text-white">Course Final Assessment</h2>
+                            <p class="mb-0 text-white opacity-75 small">Test your knowledge of the course concepts. Score 70% or higher to pass.</p>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="text-end d-none d-md-block">
+                                <small class="text-white opacity-75 d-block">Passing Grade</small>
+                                <strong class="fs-5 text-warning">70% Required</strong>
+                            </div>
+                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold fs-6">
+                                {{ course.question_set.count }} Questions
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exam Form Body -->
+                <div class="p-4 p-md-5">
+                    {% if course.question_set.all %}
+                        <form id="questionform" action="{% url 'onlinecourse:submit' course.id %}" method="post">
+                            {% csrf_token %}
+
+                            {% for question in course.question_set.all %}
+                                <div class="question-container">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fw-bold">
+                                                Question {{ forloop.counter }}
+                                            </span>
+                                        </div>
+                                        <span class="badge bg-light text-secondary border rounded-pill px-3 py-1 fw-semibold">
+                                            <i class="bi bi-star-fill text-warning me-1"></i>{{ question.grade }} Points
+                                        </span>
+                                    </div>
+
+                                    <h5 class="fw-bold text-dark mb-4 fs-5 lh-base">
+                                        {{ question.question_text }}
+                                    </h5>
+
+                                    <!-- Interactive Radio Choices -->
+                                    <div class="choices-list">
+                                        {% for choice in question.choice_set.all %}
+                                            <div class="choice-option-wrapper">
+                                                <input type="radio" 
+                                                       name="choice_{{ question.id }}" 
+                                                       id="choice_{{ choice.id }}" 
+                                                       value="{{ choice.id }}" 
+                                                       required>
+                                                <label class="choice-card-label" for="choice_{{ choice.id }}">
+                                                    <div class="choice-radio-indicator"></div>
+                                                    <span class="choice-text fs-6">{{ choice.choice_text }}</span>
+                                                </label>
+                                            </div>
+                                        {% empty %}
+                                            <div class="alert alert-warning">No choices configured for this question.</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                            <!-- Submit Exam CTA -->
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-4 border-top">
+                                <div class="text-muted small">
+                                    <i class="bi bi-shield-check text-success me-1"></i>
+                                    Answers are saved and evaluated immediately upon submission.
+                                </div>
+                                <div class="d-flex gap-3">
+                                    <a href="{% url 'onlinecourse:index' %}" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
+                                        Cancel
+                                    </a>
+                                    <button type="submit" class="btn-submit-exam">
+                                        <i class="bi bi-send-check-fill"></i>
+                                        Submit Exam
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="display-3 text-muted mb-3"><i class="bi bi-clipboard2-x"></i></div>
+                            <h4 class="fw-bold text-secondary">No Assessment Questions Available</h4>
+                            <p class="text-muted">Questions will appear once configured in the course administration panel.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Clean Footer -->
+    <footer class="bg-white border-top py-4 mt-auto">
+        <div class="container text-center text-muted small">
+            <p class="mb-0">&copy; {% now "Y" %} Online Course Application. Powered by Django &amp; Bootstrap 5.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
