@@ -1,5 +1,5 @@
 """
-Django settings for onlinecourse_project.
+Django settings for onlinecourse.
 """
 
 from pathlib import Path
@@ -7,7 +7,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-onlinecourse-project-secret-key-assessment'
+SECRET_KEY = 'django-insecure-onlinecourse-secret-key-assessment'
 
 DEBUG = True
 
@@ -33,7 +33,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'onlinecourse_project.urls'
+ROOT_URLCONF = 'onlinecourse.urls'
 
 TEMPLATES = [
     {
@@ -54,8 +54,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'onlinecourse_project.wsgi.application'
-ASGI_APPLICATION = 'onlinecourse_project.asgi.application'
+WSGI_APPLICATION = 'onlinecourse.wsgi.application'
+ASGI_APPLICATION = 'onlinecourse.asgi.application'
 
 DATABASES = {
     'default': {

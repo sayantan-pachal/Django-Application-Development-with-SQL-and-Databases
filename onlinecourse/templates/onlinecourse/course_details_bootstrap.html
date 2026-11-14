@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ course.name }} - Course &amp; Assessment</title>
+    <!-- Prevent theme flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,24 +26,22 @@
             --brand-primary-hover: #4338ca;
             --brand-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             --hero-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
-            --glass-bg: rgba(255, 255, 255, 0.88);
-            --glass-border: rgba(255, 255, 255, 0.3);
             --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
-            --card-shadow-hover: 0 20px 35px -5px rgba(79, 70, 229, 0.15), 0 8px 10px -4px rgba(79, 70, 229, 0.08);
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Glassmorphism Navbar */
         .glass-nav {
-            background: rgba(15, 23, 42, 0.92) !important;
+            background: rgba(15, 23, 42, 0.94) !important;
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -74,32 +79,32 @@
 
         /* Lesson Accordion */
         .custom-accordion .accordion-item {
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--bs-border-color);
             border-radius: 1rem !important;
             margin-bottom: 1rem;
             overflow: hidden;
-            background: #ffffff;
+            background: var(--bs-card-bg);
             box-shadow: var(--card-shadow);
             transition: all 0.25s ease;
         }
 
         .custom-accordion .accordion-item:hover {
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
-            border-color: #cbd5e1;
+            border-color: var(--bs-border-color-translucent);
         }
 
         .custom-accordion .accordion-button {
             padding: 1.25rem 1.5rem;
             font-size: 1.05rem;
             font-weight: 600;
-            color: #0f172a;
-            background: #ffffff;
+            color: var(--bs-heading-color, var(--bs-body-color));
+            background: var(--bs-card-bg);
             border-radius: 1rem !important;
         }
 
         .custom-accordion .accordion-button:not(.collapsed) {
             color: var(--brand-primary);
-            background: #f5f3ff;
+            background: var(--bs-primary-bg-subtle);
             box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.05);
         }
 
@@ -119,10 +124,10 @@
 
         /* Assessment Card */
         .exam-section-card {
-            background: #ffffff;
+            background: var(--bs-card-bg);
             border-radius: 1.5rem;
             box-shadow: var(--card-shadow);
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--bs-border-color);
             overflow: hidden;
         }
 
@@ -134,8 +139,8 @@
         }
 
         .question-container {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
+            background: var(--bs-card-bg);
+            border: 1px solid var(--bs-border-color);
             border-radius: 1.25rem;
             padding: 1.75rem;
             margin-bottom: 1.75rem;
@@ -144,8 +149,8 @@
         }
 
         .question-container:hover {
-            border-color: #c7d2fe;
-            box-shadow: 0 12px 25px -5px rgba(79, 70, 229, 0.08);
+            border-color: #818cf8;
+            box-shadow: 0 12px 25px -5px rgba(79, 70, 229, 0.1);
         }
 
         /* Interactive Radio Choice Cards */
@@ -165,19 +170,19 @@
             display: flex;
             align-items: center;
             padding: 1.15rem 1.35rem;
-            background-color: #f8fafc;
-            border: 2px solid #e2e8f0;
+            background-color: var(--bs-tertiary-bg);
+            border: 2px solid var(--bs-border-color);
             border-radius: 1rem;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 500;
-            color: #334155;
+            color: var(--bs-body-color);
             user-select: none;
         }
 
         .choice-card-label:hover {
-            background-color: #f1f5f9;
-            border-color: #cbd5e1;
+            background-color: var(--bs-secondary-bg);
+            border-color: #a5b4fc;
             transform: translateY(-2px);
         }
 
@@ -205,9 +210,9 @@
 
         /* Active / Checked State */
         .choice-option-wrapper input[type="radio"]:checked + .choice-card-label {
-            background: #eef2ff;
+            background: var(--bs-primary-bg-subtle);
             border-color: var(--brand-primary);
-            color: #1e1b4b;
+            color: var(--bs-primary-text-emphasis);
             font-weight: 600;
             box-shadow: 0 6px 16px -2px rgba(79, 70, 229, 0.2);
             transform: translateY(-2px);
@@ -243,6 +248,21 @@
             transform: translateY(-3px);
             box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.55);
         }
+
+        /* Guest Lock Card */
+        .guest-lock-card {
+            border: 2px dashed var(--bs-border-color) !important;
+            background: var(--bs-body-tertiary) !important;
+        }
+
+        /* Dark mode overrides */
+        [data-bs-theme="dark"] .hero-card {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        [data-bs-theme="dark"] .custom-accordion .accordion-button:not(.collapsed) {
+            background: rgba(79, 70, 229, 0.15);
+            color: #c7d2fe;
+        }
     </style>
 </head>
 <body>
@@ -268,6 +288,12 @@
                     </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
+                    <!-- Sleek Dark / Light Mode Toggle Button -->
+                    <button class="btn btn-outline-light btn-sm rounded-pill d-flex align-items-center gap-2 px-3 py-1 shadow-sm me-2" id="theme-toggle-btn" type="button" title="Toggle Light/Dark Theme">
+                        <i id="theme-icon" class="bi bi-moon-stars-fill"></i>
+                        <span class="small fw-semibold d-none d-sm-inline" id="theme-text">Theme</span>
+                    </button>
+
                     {% if user.is_authenticated %}
                         <div class="text-light me-2 d-flex align-items-center gap-2 small">
                             <i class="bi bi-person-circle fs-5 text-indigo-300"></i>
@@ -295,7 +321,7 @@
             {% endfor %}
         {% endif %}
 
-        <!-- Stunning Course Hero Header -->
+        <!-- Course Hero Header -->
         <div class="hero-card p-4 p-md-5 mb-5 text-white">
             <div class="position-relative z-1">
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
@@ -346,12 +372,12 @@
         <section class="mb-5">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <div>
-                    <h2 class="h3 fw-bold text-dark mb-1">
+                    <h2 class="h3 fw-bold mb-1">
                         <i class="bi bi-collection-play-fill text-primary me-2"></i>Course Curriculum
                     </h2>
                     <p class="text-muted small mb-0">Step-by-step curriculum designed to guide you through the course material.</p>
                 </div>
-                <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill fw-semibold">
+                <span class="badge bg-body-secondary text-secondary border px-3 py-2 rounded-pill fw-semibold">
                     {{ course.lesson_set.count }} Modules
                 </span>
             </div>
@@ -367,7 +393,7 @@
                                 </button>
                             </h2>
                             <div id="collapse{{ lesson.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ lesson.id }}" data-bs-parent="#lessonsAccordion">
-                                <div class="accordion-body text-secondary lh-lg p-4 bg-white border-top">
+                                <div class="accordion-body text-body-secondary lh-lg p-4 bg-body border-top">
                                     {{ lesson.content|linebreaks }}
                                 </div>
                             </div>
@@ -404,67 +430,91 @@
                     </div>
                 </div>
 
-                <!-- Exam Form Body -->
+                <!-- Exam Form Body with Access Control -->
                 <div class="p-4 p-md-5">
                     {% if course.question_set.all %}
-                        <form id="questionform" action="{% url 'onlinecourse:submit' course.id %}" method="post">
-                            {% csrf_token %}
+                        {% if user.is_authenticated %}
+                            <!-- Authenticated Exam Form -->
+                            <form id="questionform" action="{% url 'onlinecourse:submit' course.id %}" method="post">
+                                {% csrf_token %}
 
-                            {% for question in course.question_set.all %}
-                                <div class="question-container">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fw-bold">
-                                                Question {{ forloop.counter }}
+                                {% for question in course.question_set.all %}
+                                    <div class="question-container">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fw-bold">
+                                                    Question {{ forloop.counter }}
+                                                </span>
+                                            </div>
+                                            <span class="badge bg-body-secondary text-secondary border rounded-pill px-3 py-1 fw-semibold">
+                                                <i class="bi bi-star-fill text-warning me-1"></i>{{ question.grade }} Points
                                             </span>
                                         </div>
-                                        <span class="badge bg-light text-secondary border rounded-pill px-3 py-1 fw-semibold">
-                                            <i class="bi bi-star-fill text-warning me-1"></i>{{ question.grade }} Points
-                                        </span>
+
+                                        <h5 class="fw-bold text-body mb-4 fs-5 lh-base">
+                                            {{ question.question_text }}
+                                        </h5>
+
+                                        <!-- Interactive Radio Choices -->
+                                        <div class="choices-list">
+                                            {% for choice in question.choice_set.all %}
+                                                <div class="choice-option-wrapper">
+                                                    <input type="radio" 
+                                                           name="choice_{{ question.id }}" 
+                                                           id="choice_{{ choice.id }}" 
+                                                           value="{{ choice.id }}" 
+                                                           required>
+                                                    <label class="choice-card-label" for="choice_{{ choice.id }}">
+                                                        <div class="choice-radio-indicator"></div>
+                                                        <span class="choice-text fs-6">{{ choice.choice_text }}</span>
+                                                    </label>
+                                                </div>
+                                            {% empty %}
+                                                <div class="alert alert-warning">No choices configured for this question.</div>
+                                            {% endfor %}
+                                        </div>
                                     </div>
+                                {% endfor %}
 
-                                    <h5 class="fw-bold text-dark mb-4 fs-5 lh-base">
-                                        {{ question.question_text }}
-                                    </h5>
-
-                                    <!-- Interactive Radio Choices -->
-                                    <div class="choices-list">
-                                        {% for choice in question.choice_set.all %}
-                                            <div class="choice-option-wrapper">
-                                                <input type="radio" 
-                                                       name="choice_{{ question.id }}" 
-                                                       id="choice_{{ choice.id }}" 
-                                                       value="{{ choice.id }}" 
-                                                       required>
-                                                <label class="choice-card-label" for="choice_{{ choice.id }}">
-                                                    <div class="choice-radio-indicator"></div>
-                                                    <span class="choice-text fs-6">{{ choice.choice_text }}</span>
-                                                </label>
-                                            </div>
-                                        {% empty %}
-                                            <div class="alert alert-warning">No choices configured for this question.</div>
-                                        {% endfor %}
+                                <!-- Submit Exam CTA -->
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-4 border-top">
+                                    <div class="text-muted small">
+                                        <i class="bi bi-shield-check text-success me-1"></i>
+                                        Answers are saved and evaluated immediately upon submission.
+                                    </div>
+                                    <div class="d-flex gap-3">
+                                        <a href="{% url 'onlinecourse:index' %}" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
+                                            Cancel
+                                        </a>
+                                        <button type="submit" class="btn-submit-exam">
+                                            <i class="bi bi-send-check-fill"></i>
+                                            Submit Exam
+                                        </button>
                                     </div>
                                 </div>
-                            {% endfor %}
-
-                            <!-- Submit Exam CTA -->
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-4 border-top">
-                                <div class="text-muted small">
-                                    <i class="bi bi-shield-check text-success me-1"></i>
-                                    Answers are saved and evaluated immediately upon submission.
+                            </form>
+                        {% else %}
+                            <!-- Guest Fallback Card (Unauthenticated Users) -->
+                            <div class="guest-lock-card rounded-4 p-5 text-center my-2 shadow-sm">
+                                <div class="mb-3">
+                                    <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle p-3 shadow-sm" style="width: 72px; height: 72px;">
+                                        <i class="bi bi-shield-lock-fill fs-2"></i>
+                                    </span>
                                 </div>
-                                <div class="d-flex gap-3">
-                                    <a href="{% url 'onlinecourse:index' %}" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
-                                        Cancel
+                                <h4 class="fw-bold mb-2 text-body">Authentication Required</h4>
+                                <p class="text-body-secondary col-md-8 mx-auto fs-6 mb-4">
+                                    You must be logged in to take the final assessment. Please log in with your account to record your answers and earn course completion credit.
+                                </p>
+                                <div class="d-flex flex-wrap justify-content-center gap-3">
+                                    <a href="{% url 'onlinecourse:login' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i> Log In to Take Assessment
                                     </a>
-                                    <button type="submit" class="btn-submit-exam">
-                                        <i class="bi bi-send-check-fill"></i>
-                                        Submit Exam
-                                    </button>
+                                    <a href="{% url 'onlinecourse:registration' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
+                                        <i class="bi bi-person-plus me-1"></i> Register as Learner
+                                    </a>
                                 </div>
                             </div>
-                        </form>
+                        {% endif %}
                     {% else %}
                         <div class="text-center py-5">
                             <div class="display-3 text-muted mb-3"><i class="bi bi-clipboard2-x"></i></div>
@@ -478,7 +528,7 @@
     </main>
 
     <!-- Clean Footer -->
-    <footer class="bg-white border-top py-4 mt-auto">
+    <footer class="bg-body-tertiary border-top py-4 mt-auto">
         <div class="container text-center text-muted small">
             <p class="mb-0">&copy; {% now "Y" %} Online Course Application. Powered by Django &amp; Bootstrap 5.</p>
         </div>
@@ -486,5 +536,43 @@
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Dark / Light Mode Toggle Script -->
+    <script>
+        (function() {
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+
+            function getStoredTheme() {
+                return localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            }
+
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-bs-theme', theme);
+                localStorage.setItem('theme', theme);
+                if (themeIcon) {
+                    if (theme === 'dark') {
+                        themeIcon.className = 'bi bi-sun-fill text-warning';
+                        if (themeText) themeText.textContent = 'Light';
+                    } else {
+                        themeIcon.className = 'bi bi-moon-stars-fill text-light';
+                        if (themeText) themeText.textContent = 'Dark';
+                    }
+                }
+            }
+
+            // Sync on load
+            applyTheme(getStoredTheme());
+
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', function() {
+                    const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+                    const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    applyTheme(targetTheme);
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

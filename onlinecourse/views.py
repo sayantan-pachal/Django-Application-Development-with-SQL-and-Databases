@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic, View
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
@@ -41,6 +42,7 @@ def enroll(request, course_id):
 
 
 # Assessment Submit View: processes exam submissions
+@login_required
 def submit(request, course_id):
     """
     Processes the POST request from the course detail exam form.
@@ -97,6 +99,7 @@ def submit(request, course_id):
 
 
 # Assessment Result View: calculates score and renders result template
+@login_required
 def show_exam_result(request, course_id, submission_id):
     """
     Fetches the submission and course, calculates total possible points and points earned,

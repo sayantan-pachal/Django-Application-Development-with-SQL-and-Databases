@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assessment Results - {{ course.name }}</title>
+    <!-- Prevent theme flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,15 +31,16 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .glass-nav {
-            background: rgba(15, 23, 42, 0.92) !important;
+            background: rgba(15, 23, 42, 0.94) !important;
             backdrop-filter: blur(14px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -87,11 +95,11 @@
             100% { transform: translateY(350px) rotate(360deg); opacity: 0; }
         }
 
-        /* Metric KPI Cards */
+        /* Metric KPI Cards with Bootstrap CSS Variables */
         .metric-card {
-            background: #ffffff;
+            background: var(--bs-card-bg);
             border-radius: 1.25rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--bs-border-color);
             padding: 1.75rem;
             box-shadow: var(--card-shadow);
             text-align: center;
@@ -118,7 +126,7 @@
             width: 112px;
             height: 112px;
             border-radius: 50%;
-            background: #ffffff;
+            background: var(--bs-card-bg);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -126,10 +134,10 @@
             box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08);
         }
 
-        /* Question Breakdown Styles */
+        /* Question Breakdown Styles using Bootstrap Variables */
         .breakdown-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
+            background: var(--bs-card-bg);
+            border: 1px solid var(--bs-border-color);
             border-radius: 1.25rem;
             margin-bottom: 1.5rem;
             overflow: hidden;
@@ -142,15 +150,15 @@
         }
 
         .breakdown-header-success {
-            background: #ecfdf5;
-            border-bottom: 1px solid #a7f3d0;
-            color: #065f46;
+            background: var(--bs-success-bg-subtle);
+            border-bottom: 1px solid var(--bs-success-border-subtle);
+            color: var(--bs-success-text-emphasis);
         }
 
         .breakdown-header-danger {
-            background: #fef2f2;
-            border-bottom: 1px solid #fecaca;
-            color: #991b1b;
+            background: var(--bs-danger-bg-subtle);
+            border-bottom: 1px solid var(--bs-danger-border-subtle);
+            color: var(--bs-danger-text-emphasis);
         }
 
         .breakdown-choice-item {
@@ -165,29 +173,29 @@
         }
 
         .choice-correct-selected {
-            background: #ecfdf5;
-            border-color: #10b981;
-            color: #065f46;
+            background: var(--bs-success-bg-subtle);
+            border-color: var(--bs-success);
+            color: var(--bs-success-text-emphasis);
             font-weight: 600;
         }
 
         .choice-missed-correct {
-            background: #f0fdf4;
-            border-color: #86efac;
-            color: #166534;
+            background: var(--bs-success-bg-subtle);
+            border-color: var(--bs-success-border-subtle);
+            color: var(--bs-success-text-emphasis);
         }
 
         .choice-wrong-selected {
-            background: #fef2f2;
-            border-color: #ef4444;
-            color: #991b1b;
+            background: var(--bs-danger-bg-subtle);
+            border-color: var(--bs-danger);
+            color: var(--bs-danger-text-emphasis);
             font-weight: 600;
         }
 
         .choice-neutral {
-            background: #f8fafc;
-            border-color: #e2e8f0;
-            color: #64748b;
+            background: var(--bs-tertiary-bg);
+            border-color: var(--bs-border-color);
+            color: var(--bs-secondary-color);
         }
 
         .btn-retake {
@@ -213,7 +221,7 @@
 </head>
 <body>
 
-    <!-- Glass Navbar -->
+    <!-- Glass Navbar with Theme Toggle -->
     <nav class="navbar navbar-expand-lg navbar-dark glass-nav sticky-top">
         <div class="container">
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'onlinecourse:index' %}">
@@ -223,6 +231,12 @@
                 <span class="text-white fs-5 tracking-tight">Online<span class="text-primary-subtle fw-light">Course</span></span>
             </a>
             <div class="d-flex align-items-center gap-2">
+                <!-- Sleek Dark / Light Mode Toggle Button -->
+                <button class="btn btn-outline-light btn-sm rounded-pill d-flex align-items-center gap-2 px-3 py-1 shadow-sm me-2" id="theme-toggle-btn" type="button" title="Toggle Light/Dark Theme">
+                    <i id="theme-icon" class="bi bi-moon-stars-fill"></i>
+                    <span class="small fw-semibold d-none d-sm-inline" id="theme-text">Theme</span>
+                </button>
+
                 <a href="{% url 'onlinecourse:course_details' course.id %}" class="btn btn-outline-light btn-sm rounded-pill px-3">
                     <i class="bi bi-arrow-left me-1"></i>Back to Course
                 </a>
@@ -283,11 +297,11 @@
             <!-- Gauge / Final Score Card -->
             <div class="col-lg-4 col-md-6">
                 <div class="metric-card">
-                    <span class="text-muted small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Final Evaluation</span>
-                    <div class="score-gauge-ring" style="background: conic-gradient({% if passed %}#10b981{% else %}#ef4444{% endif %} 0% {{ grade }}%, #e2e8f0 {{ grade }}% 100%);">
+                    <span class="text-body-secondary small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Final Evaluation</span>
+                    <div class="score-gauge-ring" style="background: conic-gradient({% if passed %}#10b981{% else %}#ef4444{% endif %} 0% {{ grade }}%, var(--bs-border-color) {{ grade }}% 100%);">
                         <div class="score-gauge-inner">
                             <span class="fs-2 fw-extrabold {% if passed %}text-success{% else %}text-danger{% endif %}">{{ grade }}%</span>
-                            <small class="text-muted fw-semibold">Score</small>
+                            <small class="text-body-secondary fw-semibold">Score</small>
                         </div>
                     </div>
                     <span class="badge {% if passed %}bg-success-subtle text-success border border-success-subtle{% else %}bg-danger-subtle text-danger border border-danger-subtle{% endif %} rounded-pill px-3 py-1 fw-bold">
@@ -299,12 +313,12 @@
             <!-- Points Earned Card -->
             <div class="col-lg-4 col-md-6">
                 <div class="metric-card">
-                    <span class="text-muted small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Points Calculation</span>
+                    <span class="text-body-secondary small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Points Calculation</span>
                     <div class="my-auto py-2">
-                        <div class="display-4 fw-extrabold text-dark mb-1">
-                            {{ earned_score }} <span class="fs-4 text-muted fw-normal">/ {{ total_score }}</span>
+                        <div class="display-4 fw-extrabold text-body mb-1">
+                            {{ earned_score }} <span class="fs-4 text-body-secondary fw-normal">/ {{ total_score }}</span>
                         </div>
-                        <p class="text-muted small mb-0">Total weighted points awarded across all questions</p>
+                        <p class="text-body-secondary small mb-0">Total weighted points awarded across all questions</p>
                     </div>
                     <div class="progress w-100 mt-3" style="height: 8px;">
                         <div class="progress-bar {% if passed %}bg-success{% else %}bg-danger{% endif %}" role="progressbar" style="width: {{ grade }}%;" aria-valuenow="{{ grade }}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -315,7 +329,7 @@
             <!-- Attempt Details Card -->
             <div class="col-lg-4 col-md-12">
                 <div class="metric-card">
-                    <span class="text-muted small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Attempt Summary</span>
+                    <span class="text-body-secondary small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Attempt Summary</span>
                     <div class="my-auto py-2">
                         <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
                             {% if passed %}
@@ -326,7 +340,7 @@
                                 <span class="fs-4 fw-bold text-danger">Retake Eligible</span>
                             {% endif %}
                         </div>
-                        <p class="text-muted small mb-0">
+                        <p class="text-body-secondary small mb-0">
                             Recorded on {{ submission.time_submitted|date:"F d, Y \a\\t H:i" }}
                         </p>
                     </div>
@@ -341,12 +355,12 @@
         <section class="mb-5">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <div>
-                    <h2 class="h4 fw-bold text-dark mb-1">
+                    <h2 class="h4 fw-bold text-body mb-1">
                         <i class="bi bi-clipboard2-check-fill text-primary me-2"></i>Detailed Question Breakdown
                     </h2>
-                    <p class="text-muted small mb-0">Review correct answers and examine your individual question submissions.</p>
+                    <p class="text-body-secondary small mb-0">Review correct answers and examine your individual question submissions.</p>
                 </div>
-                <span class="badge bg-light text-secondary border rounded-pill px-3 py-2 fw-semibold">
+                <span class="badge bg-body-secondary text-secondary border rounded-pill px-3 py-2 fw-semibold">
                     {{ detailed_results|length }} Questions Evaluated
                 </span>
             </div>
@@ -362,7 +376,7 @@
                             <span class="fw-bold fs-6">{{ item.question.question_text }}</span>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-white text-dark border rounded-pill px-3 py-1 fw-semibold">
+                            <span class="badge bg-body text-body border rounded-pill px-3 py-1 fw-semibold">
                                 +{{ item.points_earned }} / {{ item.grade }} Points
                             </span>
                             {% if item.is_correct %}
@@ -374,7 +388,7 @@
                     </div>
 
                     <!-- Choices List -->
-                    <div class="p-4 bg-white">
+                    <div class="p-4 bg-body">
                         <div class="choices-container">
                             {% for choice in item.choices %}
                                 {% if choice.is_correct and choice == item.selected_choice %}
@@ -441,7 +455,7 @@
     </main>
 
     <!-- Clean Footer -->
-    <footer class="bg-white border-top py-4 mt-auto">
+    <footer class="bg-body-tertiary border-top py-4 mt-auto">
         <div class="container text-center text-muted small">
             <p class="mb-0">&copy; {% now "Y" %} Online Course Application. Powered by Django &amp; Bootstrap 5.</p>
         </div>
@@ -449,5 +463,43 @@
 
     <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Dark / Light Mode Toggle Script -->
+    <script>
+        (function() {
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+
+            function getStoredTheme() {
+                return localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            }
+
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-bs-theme', theme);
+                localStorage.setItem('theme', theme);
+                if (themeIcon) {
+                    if (theme === 'dark') {
+                        themeIcon.className = 'bi bi-sun-fill text-warning';
+                        if (themeText) themeText.textContent = 'Light';
+                    } else {
+                        themeIcon.className = 'bi bi-moon-stars-fill text-light';
+                        if (themeText) themeText.textContent = 'Dark';
+                    }
+                }
+            }
+
+            // Sync on load
+            applyTheme(getStoredTheme());
+
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', function() {
+                    const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+                    const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    applyTheme(targetTheme);
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
