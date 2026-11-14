@@ -21,14 +21,6 @@ A full-stack web application built with Django that allows users to browse cours
 * **Stunning UI/UX:** Fully responsive design built with **Bootstrap 5**. Includes custom CSS glassmorphism effects, hover animations, and a seamless **Dark/Light Mode** toggle that persists via LocalStorage.
 * **Admin Dashboard:** Fully configured Django Admin interface with inline model management (`TabularInline` and `StackedInline`) for easy creation of Questions and Choices directly from the Course page.
 
-## 📸 Screenshots
-
-*(Add your screenshots here by replacing the placeholder links)*
-
-| Admin Dashboard | Exam Interface | Result Dashboard |
-| :---: | :---: | :---: |
-| <img src="placeholder-03-admin-site.png" width="300" alt="Admin Site"/> | <img src="placeholder-exam.png" width="300" alt="Exam Form"/> | <img src="placeholder-07-final.png" width="300" alt="Results Page"/> |
-
 ## 🛠️ Technology Stack
 
 * **Backend:** Python, Django
